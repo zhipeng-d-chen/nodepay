@@ -9,8 +9,10 @@ import logging
 logging.disable(logging.ERROR)
 from utils.banner import banner
 
+# Initialize colorama
 init(autoreset=True)
 
+# Customize loguru to use color for different log levels
 logger.remove()
 logger.add(sys.stdout, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{message}</level>", colorize=True)
 logger.level("INFO", color=f"{Fore.GREEN}")
@@ -66,8 +68,7 @@ async def render_profile_info(proxy, token):
         if not proxy_auth_status.get(proxy):  
             browser_id = uuidv4()
             response = await call_api(DOMAIN_API["SESSION"], {}, proxy, token)
-            if response is None:
-                logger.info(f"{Fore.YELLOW}Skipping proxy {proxy} due to 403 error.")
+            if response is None:                
                 return
             valid_resp(response)
             account_info = response["data"]
@@ -81,7 +82,7 @@ async def render_profile_info(proxy, token):
         await start_ping(proxy, token)
 
     except Exception as e:
-        logger.error(f"{Fore.RED}Error in render_profile_info for proxy {proxy}: {e}")
+        pass
 
 async def call_api(url, data, proxy, token, max_retries=3):
     headers = {
@@ -102,20 +103,18 @@ async def call_api(url, data, proxy, token, max_retries=3):
                     return valid_resp(resp_json)
 
             except aiohttp.ClientResponseError as e:
-                logger.error(f"{Fore.RED}API call error on attempt {attempt + 1} for proxy {proxy}: {e}")
-                if e.status == 403:
-                    logger.warning(f"{Fore.YELLOW}403 Forbidden encountered on attempt {attempt + 1}: {e}")
+                
+                if e.status == 403:                    
                     return None
             except aiohttp.ClientConnectionError as e:
-                logger.error(f"{Fore.RED}Connection error on attempt {attempt + 1} for proxy {proxy}: {e}")
-            except aiohttp.Timeout as e:
-                logger.warning(f"{Fore.YELLOW}Timeout on attempt {attempt + 1} for proxy {proxy}: {e}")
+                pass
+            
             except Exception as e:
-                logger.critical(f"{Style.BRIGHT}{Fore.RED}Unexpected error on attempt {attempt + 1} for proxy {proxy}: {e}")
+                pass
 
             await asyncio.sleep(2 ** attempt)
 
-    logger.error(f"{Fore.RED}Failed API call to {url} after {max_retries} attempts with proxy {proxy}")
+    #logger.error(f"{Fore.RED}Failed API call to {url} after {max_retries} attempts with proxy {proxy}")
     return None
 
 async def start_ping(proxy, token):
@@ -153,7 +152,7 @@ async def ping(proxy, token):
         else:
             handle_ping_fail(proxy, response)
     except Exception as e:
-        logger.error(f"{Fore.RED}Ping failed via proxy {proxy}: {e}")
+        
         handle_ping_fail(proxy, None)
 
 def handle_ping_fail(proxy, response):
@@ -238,7 +237,7 @@ async def main():
 
             done, pending = await asyncio.wait(tasks.keys(), return_when=asyncio.FIRST_COMPLETED)
             for task in done:
-                logger.info(f"{Fore.YELLOW}Completed task for proxy: {tasks[task]}")
+                
                 tasks.pop(task)
 
             for proxy in set(all_proxies) - set(tasks.values()):
