@@ -212,7 +212,7 @@ async def send_data_to_server(url, data, token):
     if response is not None:
         logger.info(f"Response received: {response}")
     else:
-        logger.error("Failed to receive response.")
+        logger.error("Failed to receive response. Trying to find another proxy...")
         
 async def main():
     show_copyright()
