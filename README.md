@@ -9,7 +9,7 @@ This script is intended for running on a server using multyple proxy.
 
 # Steps to Run the Code
 ```bash
-git clone https://github.com/Zlkcyber.com/nodepay.git
+git clone https://github.com/Zlkcyber/nodepay.git
 cd nodepay
 ```
 **Update proxy**
