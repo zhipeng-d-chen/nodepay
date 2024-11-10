@@ -13,6 +13,15 @@ git clone https://github.com/Zlkcyber/nodepay.git
 cd nodepay
 ```
 
+## Update 
+- each account only can connect 10 proxy
+- so the best way to farm right now is to create multy accounts
+- the script is support multy account just paste token `np_tokens.txt` each line for 1 account
+- make sure your account get **Proof of Humanhood** badge
+- Register here [https://app.nodepay.ai/](https://app.nodepay.ai/register?ref=Od15EPpf6UBd5qR)
+  
+![image](https://github.com/user-attachments/assets/6b77e7e9-7fcc-4de0-b026-ca3d1a40146e)
+
 ## 1. Obtain Required Information
 
 1. Open the link and log in to [https://app.nodepay.ai/](https://app.nodepay.ai/register?ref=Od15EPpf6UBd5qR)
