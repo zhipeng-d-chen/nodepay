@@ -33,7 +33,7 @@ TOKEN_FILE = 'np_tokens.txt'
 
 DOMAIN_API = {
     "SESSION": "http://18.136.143.169/api/auth/session",
-    "PING": "http://54.255.192.166/api/network/ping"
+    "PING": "https://nw.nodepay.org/api/network/ping"
 }
 
 CONNECTION_STATES = {
