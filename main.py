@@ -1,6 +1,5 @@
 import requests as reqs
 import asyncio
-import aiohttp
 import time
 import uuid
 from curl_cffi import requests
@@ -35,7 +34,7 @@ def uuidv4():
 
 def show_copyright():
     print(Fore.MAGENTA + Style.BRIGHT + banner + Style.RESET_ALL)
-        
+
 def valid_resp(resp):
     if not resp or "code" not in resp or resp["code"] < 0:
         raise ValueError("Invalid response")
@@ -68,10 +67,8 @@ async def render_profile_info(token):
             "sent 1011 (internal error) keepalive ping timeout; no close frame received",
             "500 Internal Server Error"
         ]):
-            logger.info("Session is invalid, clearing.")
+            logger.info("Detected an invalid session, clearing data.")
             handle_logout()
-        else:
-            logger.error(f"Connection error: {e}")
 
 async def call_api(url, data, token):
     headers = {
@@ -96,16 +93,16 @@ async def start_ping(token):
             await ping(token)
             await asyncio.sleep(PING_INTERVAL)
     except asyncio.CancelledError:
-        logger.info("Ping task was cancelled")
+        logger.info(f"Ping task was cancelled")
     except Exception as e:
         logger.error(f"Error in start_ping: {e}")
-        
+
 async def ping(token):
     global last_ping_time, RETRIES, status_connect
 
     current_time = time.time()
 
-    if (current_time - last_ping_time.get("last_ping_time", 0)) < PING_INTERVAL:
+    if "last_ping_time" in last_ping_time and (current_time - last_ping_time["last_ping_time"]) < PING_INTERVAL:
         logger.info("Skipping ping, not enough time elapsed")
         return
 
@@ -114,7 +111,7 @@ async def ping(token):
     try:
         data = {
             "id": account_info.get("uid"),
-            "browser_id": browser_id,  
+            "browser_id": browser_id,
             "timestamp": int(time.time()),
             "version": "2.2.7"
         }
@@ -149,11 +146,10 @@ def handle_logout():
     logger.info("Logged out and cleared session info.")
 
 def save_session_info(data):
-    # Saving session info logic here
-    pass
+    pass  # Save session info (e.g., to a file or database)
 
 def load_session_info():
-    return {}  
+    return {}  # Load session info (if any)
 
 def load_tokens_from_file(filename):
     try:
@@ -163,15 +159,17 @@ def load_tokens_from_file(filename):
     except Exception as e:
         logger.error(f"Failed to load tokens: {e}")
         raise SystemExit("Exiting due to failure in loading tokens")
-        
+
 async def main():
     tokens = load_tokens_from_file(TOKEN_FILE)
     if not tokens:
-        print("Token cannot be empty. Exiting the program.")
+        print("Token file is empty. Exiting the program.")
         exit()
 
-    tasks = [asyncio.create_task(render_profile_info(token)) for token in tokens]
-    await asyncio.gather(*tasks)
+    while True:
+        tasks = [asyncio.create_task(render_profile_info(token)) for token in tokens]
+        await asyncio.gather(*tasks)
+        await asyncio.sleep(10)  # Wait before the next round of tasks
 
 if __name__ == '__main__':
     show_copyright()
